@@ -1,32 +1,36 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { connectToDB } from "@utils/database";
+import User from "@models/user";
 
-import User from '@models/user';
-import { connectToDB } from '@utils/database';
+// console.log({
+//   clientId: process.env.GOOGLE_ID,
+//   clientSecret: process.env.GOOGLE_CLOUD_SECRET,
+// });
 
 const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    })
+      clientSecret: process.env.GOOGLE_CLOUD_SECRET,
+    }),
   ],
   callbacks: {
     async session({ session }) {
-      // store the user id from MongoDB to session
-      const sessionUser = await User.findOne({ email: session.user.email });
+      const sessionUser = await User.findOne({
+        email: session.user.email,
+      });
       session.user.id = sessionUser._id.toString();
-
       return session;
     },
-    async signIn({ account, profile, user, credentials }) {
+    async signIn({ profile }) {
       try {
         await connectToDB();
-
-        // check if user already exists
-        const userExists = await User.findOne({ email: profile.email });
-
-        // if not, create a new document and save user in MongoDB
+        //we will check here either the user exists
+        const userExists = await User.findOne({
+          email: profile.email,
+        });
+        //if not , create the user
         if (!userExists) {
           await User.create({
             email: profile.email,
@@ -34,14 +38,12 @@ const handler = NextAuth({
             image: profile.picture,
           });
         }
-
-        return true
+        return true;
       } catch (error) {
-        console.log("Error checking if user exists: ", error.message);
-        return false
+        return false;
       }
     },
-  }
-})
+  },
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

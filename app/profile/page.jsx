@@ -27,6 +27,26 @@ const MyProfile = () => {
     router.push(`/update-prompt?id=${post._id}`);
   };
 
+  //   const handleDelete = async (post) => {
+  //     const hasConfirmed = confirm(
+  //       "Are you sure you want to delete this prompt?"
+  //     );
+
+  //     if (hasConfirmed) {
+  //       try {
+  //         await fetch(`/api/prompt/${post._id.toString()}`, {
+  //           method: "DELETE",
+  //         });
+
+  //         const filteredPosts = myPosts.filter((p) => p._id !== post._id);
+
+  //         setMyPosts(filteredPosts);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     }
+  //   };
+
   const handleDelete = async (post) => {
     const hasConfirmed = confirm(
       "Are you sure you want to delete this prompt?"
@@ -34,23 +54,26 @@ const MyProfile = () => {
 
     if (hasConfirmed) {
       try {
-        await fetch(`/api/prompt/${post._id.toString()}`, {
+        const response = await fetch(`/api/prompt/${post._id.toString()}`, {
           method: "DELETE",
         });
 
-        const filteredPosts = myPosts.filter((item) => item._id !== post._id);
-
-        setMyPosts(filteredPosts);
+        if (response.ok) {
+          const filteredPosts = myPosts.filter((p) => p._id !== post._id);
+          setMyPosts(filteredPosts);
+        } else {
+          console.log("Failed to delete the prompt.");
+        }
       } catch (error) {
-        console.log(error);
+        console.log("Error deleting prompt:", error);
       }
     }
   };
 
   return (
     <Profile
-      name='My'
-      desc='Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination'
+      name="My"
+      desc="Welcome to your personalized profile page. Share your exceptional prompts and inspire others with the power of your imagination"
       data={myPosts}
       handleEdit={handleEdit}
       handleDelete={handleDelete}
