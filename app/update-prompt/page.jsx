@@ -73,7 +73,7 @@ import { Suspense } from 'react';
 
 export default function UpdatePromptPage() {
   return (
-    <Suspense fallback={<div></div>}>
+    <Suspense fallback={<div>....</div>}>
       <UpdatePrompt />
     </Suspense>
   );
