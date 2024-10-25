@@ -102,9 +102,7 @@ export default PromptCard;
 
 
 
-
-
-// This is the code written by me.
+// This is the code written by me ...
 // "use client";
 
 // import { useState } from "react";
